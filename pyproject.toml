@@ -18,11 +18,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-# Only needed to run tests/ locally or in CI — never installed by a normal
-# `pip install mkdocs-audience-toggle`. `mkdocs-material` itself is a
-# test dependency too: the plugin's runtime code has no Material import,
-# but the accessibility test fixture site builds against it, matching how
-# the plugin is actually used in practice.
+# Test-only. The plugin doesn't need mkdocs-material, but the test site uses it.
 test = [
   "mkdocs-material",
   "pytest",

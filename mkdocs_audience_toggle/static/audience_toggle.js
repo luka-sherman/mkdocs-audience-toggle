@@ -15,8 +15,8 @@
     }
   }
 
-  // Hides/restores an element and, if it's a heading, its whole section
-  // (every sibling up to the next heading of the same or higher level).
+  // A heading hides its whole section: every following sibling up to the next
+  // heading of the same or higher level.
   function setElementHidden(el, hidden, config) {
     el.style.display = hidden ? "none" : "";
 
@@ -47,10 +47,8 @@
     }
   }
 
-  // Material's toc.integrate nests a page's headings as <a> links in the
-  // left nav; hide the matching entry too so there's no dead link to
-  // hidden content. querySelectorAll covers both the inert copy inside
-  // the primary nav and the real one in a secondary sidebar, if present.
+  // Material can render the same TOC link more than once (primary nav and
+  // secondary sidebar), so hide every match.
   function setTocEntryHidden(id, hidden) {
     document.querySelectorAll('a.md-nav__link[href$="#' + id + '"]').forEach(function (link) {
       var item = link.closest(".md-nav__item");
@@ -72,9 +70,6 @@
     document.documentElement.setAttribute("data-fcm-mode", mode);
     applyContentVisibility(mode, config);
 
-    var index = config.modes.findIndex(function (m) {
-      return m.name === mode;
-    });
     container.dataset.active = mode;
     var activeOption = null;
     container.querySelectorAll(".fcm-option").forEach(function (option) {
@@ -84,11 +79,6 @@
     });
     positionHighlight(container, activeOption);
 
-    // Callers only ever call applyState when the mode is actually changing
-    // (or on first setup, where previousMode is null) — every caller already
-    // guards the no-op case before calling in. Dispatched on `document`
-    // (not the container) so a site's analytics snippet can add one
-    // top-level listener without needing a reference to the toggle itself.
     if (previousMode !== mode) {
       document.dispatchEvent(
         new CustomEvent("fcm:modechange", { detail: { mode: mode, previousMode: previousMode } })
@@ -96,12 +86,8 @@
     }
   }
 
-  // Options are flex children, not evenly divided fractions of the track —
-  // a flex item's default min-width: auto keeps it from shrinking below
-  // its own label's content width, so options with different-length
-  // labels end up different widths (most visible with 3+ modes). Measure
-  // the actual active button instead of assuming an equal 100%/count
-  // share, so the highlight lines up regardless of label length.
+  // Options size to their labels, so the highlight is measured from the active
+  // option rather than set to an equal share of the track.
   function positionHighlight(container, activeOption) {
     var highlight = container.querySelector(".fcm-highlight");
     if (!highlight || !activeOption) return;
@@ -130,6 +116,7 @@
     var headerBottom = header ? header.getBoundingClientRect().bottom : 0;
     toast.style.top = Math.max(headerBottom, 0) + 12 + "px";
 
+    // Force a reflow so the transition restarts if the toast is already showing.
     toast.classList.remove("fcm-toast--visible");
     void toast.offsetWidth;
     toast.classList.add("fcm-toast--visible");
@@ -211,17 +198,13 @@
     return /^H[1-6]$/.test(el.tagName) ? Number(el.tagName[1]) : null;
   }
 
-  // Whether the plugin would hide `el` in `mode`, computed without touching
-  // the DOM. Mirrors setElementHidden: an element is hidden if it or any
-  // ancestor is marked, if it or any ancestor sits in the section of a
-  // marked heading, or if an ancestor is a `wrapper_class` wrapper whose
-  // first child is a marked heading.
+  // Same rules as setElementHidden, checked without changing the page.
   function isHiddenInMode(el, mode, config) {
     for (var node = el; node && node !== document.body; node = node.parentElement) {
       if (marksMode(node, mode, config)) return true;
 
-      // A preceding sibling heading governs `node` if every heading between
-      // them (and `node` itself, if it's a heading) is lower-level than it.
+      // An earlier sibling heading owns `node` if it's a higher level than
+      // `node` and every heading in between.
       var limit = headingLevel(node) || 7;
       for (var sib = node.previousElementSibling; sib && limit > 1; sib = sib.previousElementSibling) {
         var level = headingLevel(sib);
@@ -245,9 +228,8 @@
     return false;
   }
 
-  // Looks outward from the current mode's position in `config.modes`, one
-  // step at a time, and returns the first mode that shows the target. When
-  // two modes are the same distance away, the later one in the list wins.
+  // Checks modes one position away from the current mode, then two, and so
+  // on. On a tie, the later mode in the list wins.
   function findNearestVisibleMode(target, config, currentIndex) {
     for (var distance = 1; distance < config.modes.length; distance++) {
       var candidates = [currentIndex + distance, currentIndex - distance];
@@ -259,9 +241,6 @@
     return null;
   }
 
-  // A visible link (e.g. a cheat-sheet table) can point at content that's
-  // hidden in the current mode. Switch to the nearest mode that shows it. If
-  // no mode shows it, leave the mode alone.
   function revealHashTargetIfHidden(container, config) {
     if (!location.hash) return;
     var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
@@ -300,11 +279,7 @@
     applyState(container, initial, config);
     revealHashTargetIfHidden(container, config);
 
-    // A webfont (e.g. Material's Roboto, loaded async) can still be mid-swap when
-    // this runs on DOMContentLoaded — measuring the active option's width against
-    // fallback-font metrics, then never correcting once the real font lands and
-    // reflows the label. document.fonts.ready resolves once every requested font has
-    // finished loading, so reposition once more after that settles.
+    // Label widths can change when a web font finishes loading.
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () {
         var current = document.getElementById("fcm-toggle");
@@ -314,6 +289,8 @@
       });
     }
 
+    // setUp runs on every page change with navigation.instant, so bind
+    // window listeners only once.
     if (!window.__fcmHashRecoveryBound) {
       window.__fcmHashRecoveryBound = true;
       window.addEventListener("hashchange", function () {
@@ -322,9 +299,6 @@
       });
     }
 
-    // A viewport resize can reflow option widths (e.g. collapseLabels
-    // hiding text below its breakpoint), which would leave the highlight
-    // sized/positioned for the old layout.
     if (!window.__fcmResizeBound) {
       window.__fcmResizeBound = true;
       window.addEventListener("resize", function () {
@@ -336,10 +310,8 @@
     }
   }
 
-  // navigation.instant (Material) swaps page content via JS without a
-  // full reload, so DOMContentLoaded only fires once. document$ is
-  // Material's own observable that emits on every page change, instant
-  // or not; fall back to DOMContentLoaded for other themes/setups.
+  // Material's document$ emits on every page change, including instant
+  // navigation, where DOMContentLoaded only fires once.
   if (window.document$) {
     window.document$.subscribe(setUp);
   } else {

@@ -1,4 +1,4 @@
-"""axe-core over the fixture site, in each of the toggle's three modes, plus the toast."""
+"""axe-core checks in each mode, and the toast's live region."""
 
 import pytest
 
@@ -15,9 +15,7 @@ def test_page_has_no_axe_violations(page, site_url, mode):
 
 
 def test_toggle_has_no_axe_violations_scoped(page, site_url):
-    """Scoped separately from the full-page scan above so a violation inside the toggle
-    itself is unambiguous in the failure message, rather than mixed in with the rest of
-    the fixture page's markup."""
+    """Runs every rule, including the ones the full-page scan skips."""
     page.goto(site_url)
     violations = run_axe(page, context="#fcm-toggle")
     assert not violations, format_violations(violations)

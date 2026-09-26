@@ -4,9 +4,7 @@
   --fcm-active-fg: #1a1a2e;
 }
 
-/* Documented pattern from the plugin README's "A CSS rule, for the one shape
-   neither of the above reaches" section — exercised here so the test suite
-   covers it against a real browser, not just described in prose. */
+/* The card grid rule from the README's "CSS for multi-paragraph list items". */
 html[data-fcm-mode="beginner"] .grid.cards > ul > li:has(> p[data-fcm-hide~="beginner"]) {
   display: none;
 }

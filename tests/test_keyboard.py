@@ -1,6 +1,4 @@
-"""Keyboard operability and focus visibility for the toggle itself — what a single axe
-scan on a static snapshot doesn't drive.
-"""
+"""Keyboard use and focus visibility for the toggle."""
 
 
 def test_toggle_options_are_real_labeled_buttons(page, site_url):

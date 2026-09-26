@@ -1,16 +1,13 @@
 /* mkdocs-audience-toggle
-   Styling hooks: override these custom properties from your own
-   extra_css instead of overriding the rules below directly.
 
-     --fcm-accent       border + highlight pill color (default: currentColor)
-     --fcm-track-bg     toggle's resting background (default: transparent)
-     --fcm-active-fg    text color of the active/pressed option (default: Canvas)
-     --fcm-radius       corner radius of the track and highlight
-     --fcm-height       track height
-     --fcm-font-size    option label font size
-     --fcm-icon-size    icon square size (mode.icon options only)
-   Set them on #fcm-toggle, or higher up the tree (e.g. :root) to affect
-   every instance. */
+   Custom properties (set on #fcm-toggle or a parent such as :root):
+     --fcm-accent       border and highlight color (default: currentColor)
+     --fcm-track-bg     toggle background (default: transparent)
+     --fcm-active-fg    text color of the active option (default: Canvas)
+     --fcm-radius       corner radius of the toggle and highlight
+     --fcm-height       toggle height
+     --fcm-font-size    label font size
+     --fcm-icon-size    icon size */
 
 .fcm-toggle {
   position: relative;
@@ -23,11 +20,7 @@
   background-color: var(--fcm-track-bg, transparent);
 }
 
-/* left/width are set in px by JS (measuring the active option's own
-   offsetLeft/offsetWidth), not a fixed 100%/count fraction — flex items
-   don't shrink below their label's content width by default, so options
-   with different-length labels end up different widths and a
-   fraction-based highlight would drift out of alignment. */
+/* left and width are set by the script to match the active option. */
 .fcm-highlight {
   position: absolute;
   top: 0;
@@ -61,9 +54,7 @@
   color: var(--fcm-active-fg, Canvas);
 }
 
-/* Icon, set per-mode via mode.icon (a full CSS mask-image value, e.g.
-   "url('data:image/svg+xml,...')"), applied as a currentColor mask so it
-   tracks the option's own text/highlight color automatically. */
+/* The icon is a mask over currentColor so it matches the label color. */
 .fcm-option--icon::before {
   content: "";
   display: inline-block;
@@ -97,14 +88,9 @@
   }
 }
 
-/* On Material for MkDocs specifically: below the same breakpoint
-   collapse_labels uses, drop the toggle onto its own second row instead of
-   competing with the hamburger/title/search for space in one cramped line.
-   Reordered after Material's own header controls (which stay on row 1;
-   `order: 10` only needs to beat their default `order: 0`), then centered
-   with auto margins on the row flex-wrap creates for it — not stretched to
-   the header's full width, since that would also stretch each option's own
-   `flex: 1` share of it, spacing three short labels awkwardly wide apart. */
+/* Material header on narrow screens: if the toggle doesn't fit, wrap it onto
+   its own row, centered. Auto margins instead of full width, because the
+   options would stretch to fill it. */
 @media (max-width: 45em) {
   .md-header__inner:has(> #fcm-toggle) {
     flex-wrap: wrap;

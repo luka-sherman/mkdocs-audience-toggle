@@ -39,8 +39,8 @@ class AudienceTogglePlugin(BasePlugin):
         modes = self.config.get("modes") or []
         if not modes:
             log.warning(
-                "audience_toggle: no 'modes' configured under the plugin's "
-                "settings in mkdocs.yml — the toggle will not be inserted."
+                "audience_toggle: no 'modes' configured in mkdocs.yml, so the "
+                "toggle will not be inserted."
             )
         normalized = []
         seen_names = set()

@@ -13,7 +13,7 @@ This whole section, including this paragraph, is hidden while Beginner is active
 <div class="wrap-me" markdown="block">
 ### Wrapped heading {: data-fcm-hide="beginner" }
 
-This heading's whole `.wrap-me` wrapper should hide too, not just the heading and its siblings.
+The `.wrap-me` wrapper around this heading is hidden too.
 </div>
 
 <div class="grid cards" markdown="block">
@@ -21,7 +21,7 @@ This heading's whole `.wrap-me` wrapper should hide too, not just the heading an
 -   __Card A__
     {: data-fcm-hide="beginner" }
 
-    This card should disappear entirely in Beginner mode, not just its first line.
+    This whole card is hidden in Beginner mode.
 
 -   __Card B__
 
