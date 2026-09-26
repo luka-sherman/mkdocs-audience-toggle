@@ -202,55 +202,77 @@
     return container;
   }
 
-  // With 3+ modes, the mode that reveals a given hidden target isn't
-  // necessarily the configured default — e.g. beginner/intermediate/advanced,
-  // currently on "beginner", clicking a link hidden only in beginner/advanced:
-  // "intermediate" (one step away) reveals it and is the better landing spot
-  // than jumping past it to "advanced" just because that's the default.
-  // `config.modes` order is taken as the author's own progression (the same
-  // order they render left-to-right), so "nearest" means nearest by index,
-  // checked outward from the current mode one step at a time; a higher index
-  // is tried before an equally-distant lower one, an arbitrary but
-  // deterministic tiebreak.
-  function findNearestVisibleMode(target, config, currentIndex) {
-    var tokens = (target.getAttribute(config.attribute) || "").split(/\s+/).filter(Boolean);
-    if (!tokens.length) return null;
-    for (var distance = 1; distance < config.modes.length; distance++) {
-      var higher = currentIndex + distance;
-      var lower = currentIndex - distance;
-      if (higher < config.modes.length && tokens.indexOf(config.modes[higher].name) === -1) {
-        return config.modes[higher].name;
+  function marksMode(el, mode, config) {
+    var tokens = (el.getAttribute(config.attribute) || "").split(/\s+/).filter(Boolean);
+    return tokens.indexOf(mode) !== -1;
+  }
+
+  function headingLevel(el) {
+    return /^H[1-6]$/.test(el.tagName) ? Number(el.tagName[1]) : null;
+  }
+
+  // Whether the plugin would hide `el` in `mode`, computed without touching
+  // the DOM. Mirrors setElementHidden: an element is hidden if it or any
+  // ancestor is marked, if it or any ancestor sits in the section of a
+  // marked heading, or if an ancestor is a `wrapper_class` wrapper whose
+  // first child is a marked heading.
+  function isHiddenInMode(el, mode, config) {
+    for (var node = el; node && node !== document.body; node = node.parentElement) {
+      if (marksMode(node, mode, config)) return true;
+
+      // A preceding sibling heading governs `node` if every heading between
+      // them (and `node` itself, if it's a heading) is lower-level than it.
+      var limit = headingLevel(node) || 7;
+      for (var sib = node.previousElementSibling; sib && limit > 1; sib = sib.previousElementSibling) {
+        var level = headingLevel(sib);
+        if (level === null || level >= limit) continue;
+        if (marksMode(sib, mode, config)) return true;
+        limit = level;
       }
-      if (lower >= 0 && tokens.indexOf(config.modes[lower].name) === -1) {
-        return config.modes[lower].name;
+
+      var first = node.firstElementChild;
+      if (
+        first &&
+        headingLevel(first) &&
+        marksMode(first, mode, config) &&
+        (config.wrapperClasses || []).some(function (cls) {
+          return node.classList.contains(cls);
+        })
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Looks outward from the current mode's position in `config.modes`, one
+  // step at a time, and returns the first mode that shows the target. When
+  // two modes are the same distance away, the later one in the list wins.
+  function findNearestVisibleMode(target, config, currentIndex) {
+    for (var distance = 1; distance < config.modes.length; distance++) {
+      var candidates = [currentIndex + distance, currentIndex - distance];
+      for (var i = 0; i < candidates.length; i++) {
+        var mode = config.modes[candidates[i]];
+        if (mode && !isHiddenInMode(target, mode.name, config)) return mode.name;
       }
     }
     return null;
   }
 
-  // A visible link (e.g. a cheat-sheet table) can point at a section that's
-  // hidden in the current mode. Switch to the nearest mode that actually
-  // reveals it instead of landing on nothing.
+  // A visible link (e.g. a cheat-sheet table) can point at content that's
+  // hidden in the current mode. Switch to the nearest mode that shows it. If
+  // no mode shows it, leave the mode alone.
   function revealHashTargetIfHidden(container, config) {
     if (!location.hash) return;
-    var target = document.getElementById(location.hash.slice(1));
-    if (!target || target.style.display !== "none") return;
+    var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    var current = container.dataset.active;
+    if (!target || !isHiddenInMode(target, current, config)) return;
 
     var currentIndex = config.modes.findIndex(function (m) {
-      return m.name === container.dataset.active;
+      return m.name === current;
     });
     var nextMode = findNearestVisibleMode(target, config, currentIndex);
-    if (nextMode === null) {
-      // Either every mode hides it (switching wouldn't help — leave the
-      // reader's chosen mode alone rather than jumping for nothing), or the
-      // target has no attribute of its own to reason about (hidden some
-      // other way, e.g. an ancestor wrapper) — fall back to the old
-      // single-default behavior as a best-effort guess in that case.
-      var tokens = (target.getAttribute(config.attribute) || "").split(/\s+/).filter(Boolean);
-      if (tokens.length) return;
-      nextMode = config.defaultMode;
-    }
-    if (nextMode === container.dataset.active) return;
+    if (nextMode === null) return;
 
     localStorage.setItem(config.storageKey, nextMode);
     applyState(container, nextMode, config);

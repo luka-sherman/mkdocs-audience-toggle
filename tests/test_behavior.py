@@ -284,3 +284,31 @@ def test_modechange_event_does_not_fire_for_a_no_op_click(page, site_url):
     page.click('.fcm-option[data-name="intermediate"]')  # already active
     events = page.evaluate("() => window.__events")
     assert events == []
+
+
+def test_hash_recovery_finds_the_mode_for_a_subheading_inside_a_hidden_section(page, site_url):
+    """other.md's '### Expert subsection' has no attribute of its own. It's hidden
+    because its parent '## Expert-only section' is marked "beginner intermediate",
+    so from Beginner the only mode that shows it is Expert, not the default
+    (Intermediate), which also hides it."""
+    page.goto(f"{site_url}/other/?mode=beginner#expert-subsection")
+    page.wait_for_function(
+        "() => getComputedStyle(document.getElementById('expert-subsection')).display !== 'none'"
+    )
+    mode = page.evaluate("() => document.documentElement.getAttribute('data-fcm-mode')")
+    assert mode == "expert"
+
+
+def test_hash_recovery_finds_the_mode_for_a_heading_inside_a_hidden_div(page, site_url):
+    """The heading sits inside a <div data-fcm-hide="intermediate">, so it has no
+    attribute and no inline style of its own. From Intermediate, Beginner and
+    Expert both show it at the same distance; the later mode in the list wins."""
+    page.goto(f"{site_url}/other/?mode=intermediate#heading-inside-a-hidden-div")
+    page.wait_for_function(
+        """() => {
+            const heading = document.getElementById('heading-inside-a-hidden-div');
+            return heading.getClientRects().length > 0;
+        }"""
+    )
+    mode = page.evaluate("() => document.documentElement.getAttribute('data-fcm-mode')")
+    assert mode == "expert"
