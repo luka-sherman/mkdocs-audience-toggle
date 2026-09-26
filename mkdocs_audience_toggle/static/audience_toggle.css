@@ -1,0 +1,152 @@
+/* mkdocs-audience-toggle
+   Styling hooks: override these custom properties from your own
+   extra_css instead of overriding the rules below directly.
+
+     --fcm-accent       border + highlight pill color (default: currentColor)
+     --fcm-track-bg     toggle's resting background (default: transparent)
+     --fcm-active-fg    text color of the active/pressed option (default: Canvas)
+     --fcm-radius       corner radius of the track and highlight
+     --fcm-height       track height
+     --fcm-font-size    option label font size
+     --fcm-icon-size    icon square size (mode.icon options only)
+   Set them on #fcm-toggle, or higher up the tree (e.g. :root) to affect
+   every instance. */
+
+.fcm-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: var(--fcm-height, 1.2rem);
+  border: 0.05rem solid var(--fcm-accent, currentColor);
+  border-radius: var(--fcm-radius, 1rem);
+  overflow: hidden;
+  background-color: var(--fcm-track-bg, transparent);
+}
+
+/* left/width are set in px by JS (measuring the active option's own
+   offsetLeft/offsetWidth), not a fixed 100%/count fraction — flex items
+   don't shrink below their label's content width by default, so options
+   with different-length labels end up different widths and a
+   fraction-based highlight would drift out of alignment. */
+.fcm-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: var(--fcm-radius, 1rem);
+  background-color: var(--fcm-accent, currentColor);
+  transition: left 0.2s ease, width 0.2s ease;
+}
+
+.fcm-option {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0 0.5rem;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fcm-font-size, 0.6rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.fcm-option[aria-pressed="true"] {
+  color: var(--fcm-active-fg, Canvas);
+}
+
+/* Icon, set per-mode via mode.icon (a full CSS mask-image value, e.g.
+   "url('data:image/svg+xml,...')"), applied as a currentColor mask so it
+   tracks the option's own text/highlight color automatically. */
+.fcm-option--icon::before {
+  content: "";
+  display: inline-block;
+  width: var(--fcm-icon-size, 0.7rem);
+  height: var(--fcm-icon-size, 0.7rem);
+  margin-right: 0.3rem;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask-image: var(--fcm-icon);
+  mask-image: var(--fcm-icon);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@media (max-width: 45em) {
+  .fcm-toggle[data-collapse-labels] .fcm-option--icon::before {
+    margin-right: 0;
+  }
+
+  .fcm-toggle[data-collapse-labels] .fcm-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+/* On Material for MkDocs specifically: below the same breakpoint
+   collapse_labels uses, drop the toggle onto its own second row instead of
+   competing with the hamburger/title/search for space in one cramped line.
+   Reordered after Material's own header controls (which stay on row 1;
+   `order: 10` only needs to beat their default `order: 0`), then centered
+   with auto margins on the row flex-wrap creates for it — not stretched to
+   the header's full width, since that would also stretch each option's own
+   `flex: 1` share of it, spacing three short labels awkwardly wide apart. */
+@media (max-width: 45em) {
+  .md-header__inner:has(> #fcm-toggle) {
+    flex-wrap: wrap;
+    row-gap: 0.2rem;
+  }
+
+  .md-header__inner > #fcm-toggle {
+    order: 10;
+    margin: 0.1rem auto 0.2rem;
+  }
+
+  .md-header__inner > .md-header__option,
+  .md-header__inner > .md-search {
+    order: 5;
+  }
+}
+
+.fcm-toast {
+  position: fixed;
+  left: 50%;
+  z-index: 10;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.4rem;
+  background-color: var(--fcm-accent, currentColor);
+  color: var(--fcm-active-fg, Canvas);
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -0.3rem);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fcm-toast--visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fcm-highlight,
+  .fcm-toast {
+    transition: none;
+  }
+}

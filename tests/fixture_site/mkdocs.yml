@@ -1,0 +1,51 @@
+site_name: FCM Test Fixture
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - toc.integrate
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Other: other.md
+
+plugins:
+  - search
+  - audience_toggle:
+      aria_label: Content level
+      query_param: mode
+      wrapper_class:
+        - wrap-me
+      modes:
+        - name: beginner
+          label: Beginner
+          description: Just the essentials
+          icon: >-
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24
+            24'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E")
+        - name: intermediate
+          label: Intermediate
+          default: true
+          description: Everything most readers need
+          icon: >-
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24
+            24'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E")
+        - name: expert
+          label: Expert
+          description: Everything, including advanced topics
+          announcement: Now showing everything.
+          icon: >-
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24
+            24'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E")
+
+extra_css:
+  - extra.css

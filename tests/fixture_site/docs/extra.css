@@ -1,0 +1,12 @@
+#fcm-toggle {
+  margin: 0.4rem 0.4rem;
+  --fcm-track-bg: rgba(0, 0, 0, 0.18);
+  --fcm-active-fg: #1a1a2e;
+}
+
+/* Documented pattern from the plugin README's "A CSS rule, for the one shape
+   neither of the above reaches" section — exercised here so the test suite
+   covers it against a real browser, not just described in prose. */
+html[data-fcm-mode="beginner"] .grid.cards > ul > li:has(> p[data-fcm-hide~="beginner"]) {
+  display: none;
+}
