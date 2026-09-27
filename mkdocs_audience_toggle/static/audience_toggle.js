@@ -95,6 +95,27 @@
     highlight.style.width = activeOption.offsetWidth + "px";
   }
 
+  // Material header only: if the toggle wrapped below the title, give it a row
+  // to itself (see .fcm-toggle--own-row in the CSS). Measured with the class
+  // off, so the toggle keeps its place whenever it fits.
+  function updateHeaderRow(container) {
+    var inner = container.parentElement;
+    if (!inner || !inner.classList.contains("md-header__inner")) return;
+    var title = inner.querySelector(".md-header__title");
+    if (!title) return;
+
+    container.classList.remove("fcm-toggle--own-row");
+    var wrapped = container.getBoundingClientRect().top >= title.getBoundingClientRect().bottom - 1;
+    container.classList.toggle("fcm-toggle--own-row", wrapped);
+  }
+
+  function refreshLayout() {
+    var container = document.getElementById("fcm-toggle");
+    if (!container) return;
+    updateHeaderRow(container);
+    positionHighlight(container, container.querySelector('.fcm-option[aria-pressed="true"]'));
+  }
+
   var toastTimer = null;
   function showToast(mode, config) {
     if (!config.showToast) return;
@@ -278,15 +299,11 @@
 
     applyState(container, initial, config);
     revealHashTargetIfHidden(container, config);
+    refreshLayout();
 
     // Label widths can change when a web font finishes loading.
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () {
-        var current = document.getElementById("fcm-toggle");
-        if (!current) return;
-        var active = current.querySelector('.fcm-option[aria-pressed="true"]');
-        positionHighlight(current, active);
-      });
+      document.fonts.ready.then(refreshLayout);
     }
 
     // setUp runs on every page change with navigation.instant, so bind
@@ -301,12 +318,7 @@
 
     if (!window.__fcmResizeBound) {
       window.__fcmResizeBound = true;
-      window.addEventListener("resize", function () {
-        var current = document.getElementById("fcm-toggle");
-        if (!current) return;
-        var active = current.querySelector('.fcm-option[aria-pressed="true"]');
-        positionHighlight(current, active);
-      });
+      window.addEventListener("resize", refreshLayout);
     }
   }
 

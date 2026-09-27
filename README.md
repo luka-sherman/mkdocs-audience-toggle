@@ -140,6 +140,7 @@ Other options:
 | `show_toast`       | `true`                          | Show a short message after the mode changes.                                |
 
 Below 45em, if the toggle doesn't fit in Material's header row, it moves to its own row below it.
+When it fits, it stays next to the title.
 This needs browser support for CSS `:has()`. Without it, the toggle stays in the header row and
 can overflow on narrow screens.
 

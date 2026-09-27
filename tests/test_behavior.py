@@ -192,6 +192,25 @@ def test_toggle_drops_to_its_own_row_on_a_narrow_viewport(page, site_url):
     assert result["notStretched"], "toggle should not stretch to the full width"
 
 
+def test_toggle_keeps_its_place_on_a_narrow_viewport_when_it_fits(page, site_url):
+    """At 700px (below the 45em breakpoint) the toggle fits beside the title, so it
+    should stay before the header's other buttons instead of moving to its own row."""
+    page.set_viewport_size({"width": 700, "height": 400})
+    page.goto(site_url)
+    result = page.evaluate(
+        """() => {
+            const toggle = document.getElementById('fcm-toggle');
+            const option = document.querySelector('.md-header__option');
+            return {
+                ownRow: toggle.classList.contains('fcm-toggle--own-row'),
+                beforeOption: toggle.getBoundingClientRect().right <= option.getBoundingClientRect().left,
+            };
+        }"""
+    )
+    assert not result["ownRow"]
+    assert result["beforeOption"], "toggle should sit before the palette button"
+
+
 def test_toggle_stays_on_the_header_row_on_a_wide_viewport(page, site_url):
     """Compared against the title, because Material hides the hamburger at this width."""
     page.set_viewport_size({"width": 1280, "height": 720})

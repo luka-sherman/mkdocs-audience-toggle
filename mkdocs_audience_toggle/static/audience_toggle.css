@@ -88,23 +88,18 @@
   }
 }
 
-/* Material header on narrow screens: if the toggle doesn't fit, wrap it onto
-   its own row, centered. Auto margins instead of full width, because the
-   options would stretch to fill it. */
+/* Material header on narrow screens: if the toggle doesn't fit next to the
+   title, the script adds .fcm-toggle--own-row, which moves it after the other
+   header buttons so it gets a row to itself. */
 @media (max-width: 45em) {
   .md-header__inner:has(> #fcm-toggle) {
     flex-wrap: wrap;
     row-gap: 0.2rem;
   }
 
-  .md-header__inner > #fcm-toggle {
-    order: 10;
+  .md-header__inner > #fcm-toggle.fcm-toggle--own-row {
+    order: 1;
     margin: 0.1rem auto 0.2rem;
-  }
-
-  .md-header__inner > .md-header__option,
-  .md-header__inner > .md-search {
-    order: 5;
   }
 }
 
