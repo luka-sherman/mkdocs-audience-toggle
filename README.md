@@ -19,14 +19,14 @@ plugins:
           icon: url(...)
 ```
 
-![Two-mode toggle, "Beginner" and "Advanced", with icons](screenshots/two-modes.png)
+![Two-mode toggle, "Beginner" and "Advanced", with icons](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/two-modes.png)
 
 In this example, the last two sections are marked `{: data-fcm-hide="beginner" }` (see
 ["Marking content"](#marking-content)), so Beginner mode hides them:
 
-![The page in Beginner mode: two sections](screenshots/content-two-modes-beginner.png)
+![The page in Beginner mode: two sections](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-two-modes-beginner.png)
 
-![The same page in Advanced mode: two more sections appear](screenshots/content-two-modes-advanced.png)
+![The same page in Advanced mode: two more sections appear](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-two-modes-advanced.png)
 
 You can add more modes. Each mode's `icon` is optional.
 
@@ -41,7 +41,7 @@ You can add more modes. Each mode's `icon` is optional.
           icon: url(...)
 ```
 
-![Three-mode toggle, "Beginner", "Intermediate", "Advanced"](screenshots/three-modes.png)
+![Three-mode toggle, "Beginner", "Intermediate", "Advanced"](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/three-modes.png)
 
 Each heading lists the modes it's hidden in, so sections can appear in stages:
 
@@ -51,11 +51,11 @@ Each heading lists the modes it's hidden in, so sections can appear in stages:
 ## Breeding cycles {: data-fcm-hide="beginner intermediate" }
 ```
 
-![The page in Beginner mode: two sections](screenshots/content-three-modes-beginner.png)
+![The page in Beginner mode: two sections](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-three-modes-beginner.png)
 
-![The same page in Intermediate mode: a third section appears](screenshots/content-three-modes-intermediate.png)
+![The same page in Intermediate mode: a third section appears](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-three-modes-intermediate.png)
 
-![The same page in Advanced mode: a fourth section appears](screenshots/content-three-modes-advanced.png)
+![The same page in Advanced mode: a fourth section appears](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-three-modes-advanced.png)
 
 Below a 45em viewport width, `collapse_labels` shows only the icons:
 
@@ -63,11 +63,11 @@ Below a 45em viewport width, `collapse_labels` shows only the icons:
       collapse_labels: true
 ```
 
-![Two-mode toggle on a phone-width viewport, showing icons only](screenshots/two-modes-mobile.png)
+![Two-mode toggle on a phone-width viewport, showing icons only](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/two-modes-mobile.png)
 
 Without `collapse_labels`, a toggle that doesn't fit in the header moves to its own row:
 
-![Three-mode toggle on a phone-width viewport, on its own row below the header](screenshots/three-modes-mobile.png)
+![Three-mode toggle on a phone-width viewport, on its own row below the header](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/three-modes-mobile.png)
 
 ## Requirements
 

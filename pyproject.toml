@@ -27,7 +27,7 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/lukasherman/mkdocs-audience-toggle"
+Homepage = "https://github.com/luka-sherman/mkdocs-audience-toggle"
 
 [project.entry-points."mkdocs.plugins"]
 audience_toggle = "mkdocs_audience_toggle.plugin:AudienceTogglePlugin"
@@ -35,5 +35,5 @@ audience_toggle = "mkdocs_audience_toggle.plugin:AudienceTogglePlugin"
 [tool.hatch.build.targets.wheel]
 packages = ["mkdocs_audience_toggle"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"mkdocs_audience_toggle/static" = "mkdocs_audience_toggle/static"
+[tool.hatch.build.targets.sdist]
+exclude = [".claude", "screenshots"]
