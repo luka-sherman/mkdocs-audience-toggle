@@ -21,7 +21,7 @@ plugins:
 
 ![Two-mode toggle, "Beginner" and "Advanced", with icons](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/two-modes.png)
 
-In this example, the last two sections are marked `{: data-fcm-hide="beginner" }` (see
+In this example, the last two sections are marked `{: data-audience-hide="beginner" }` (see
 ["Marking content"](#marking-content)), so Beginner mode hides them:
 
 ![The page in Beginner mode: two sections](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-two-modes-beginner.png)
@@ -46,9 +46,9 @@ You can add more modes. Each mode's `icon` is optional.
 Each heading lists the modes it's hidden in, so sections can appear in stages:
 
 ```markdown
-## Handling and health checks {: data-fcm-hide="beginner" }
+## Handling and health checks {: data-audience-hide="beginner" }
 
-## Breeding cycles {: data-fcm-hide="beginner intermediate" }
+## Breeding cycles {: data-audience-hide="beginner intermediate" }
 ```
 
 ![The page in Beginner mode: two sections](https://raw.githubusercontent.com/luka-sherman/mkdocs-audience-toggle/master/screenshots/content-three-modes-beginner.png)
@@ -118,7 +118,7 @@ plugins:
 
 | Key            | Required | Description                                                                  |
 | -------------- | -------- | ---------------------------------------------------------------------------- |
-| `name`         | yes      | Identifier used in `data-fcm-hide`, the URL parameter, and `localStorage`.  |
+| `name`         | yes      | Identifier used in `data-audience-hide`, the URL parameter, and `localStorage`.  |
 | `label`        | no       | Button text. Defaults to `name.title()`.                                     |
 | `default`      | no       | Makes this the mode on a reader's first visit. Defaults to the first mode.  |
 | `icon`         | no       | A CSS `mask-image` value, such as `"url('data:image/svg+xml,...')"`.         |
@@ -129,10 +129,10 @@ Other options:
 
 | Key                | Default                         | Description                                                                 |
 | ------------------ | ------------------------------- | --------------------------------------------------------------------------- |
-| `storage_key`      | `fcm-mode`                      | `localStorage` key for the active mode.                                     |
+| `storage_key`      | `audience-mode`                      | `localStorage` key for the active mode.                                     |
 | `query_param`      | none                            | URL parameter that sets the mode, such as `?mode=advanced`.                 |
 | `insert_selector`  | `[data-md-component="palette"]` | The toggle is inserted before the first element matching this selector. If nothing matches, it's added to the end of `<body>`. |
-| `attribute`        | `data-fcm-hide`                 | Attribute used to mark content.                                             |
+| `attribute`        | `data-audience-hide`                 | Attribute used to mark content.                                             |
 | `hide_toc_entries` | `true`                          | Also hide a hidden heading's entry in Material's table of contents.         |
 | `wrapper_class`    | `[]`                            | Class names of wrapper elements to hide along with a marked heading, when the heading is the wrapper's first child. |
 | `aria_label`       | `Content mode`                  | Accessible label for the toggle.                                            |
@@ -146,7 +146,7 @@ can overflow on narrow screens.
 
 ## Marking content
 
-The plugin hides elements whose `data-fcm-hide` attribute (or the attribute set in `attribute`)
+The plugin hides elements whose `data-audience-hide` attribute (or the attribute set in `attribute`)
 includes the active mode. The value is a space-separated list of mode names. There are three ways
 to add the attribute.
 
@@ -156,14 +156,14 @@ With the [`attr_list`](https://python-markdown.github.io/extensions/attr_list/) 
 in `markdown_extensions`, add the attribute to a heading, paragraph, list item, or admonition:
 
 ```markdown
-## Decorators {: data-fcm-hide="essentials" }
+## Decorators {: data-audience-hide="essentials" }
 
 This section is hidden in Essentials mode.
 
 ## Functions
 
 This paragraph is hidden in Essentials mode. The rest of the section is shown.
-{: data-fcm-hide="essentials" }
+{: data-audience-hide="essentials" }
 ```
 
 A marked heading hides its whole section, up to the next heading of the same or higher level. Any
@@ -177,11 +177,11 @@ a `<div>`, add `markdown="block"` (from the
 inside it is still rendered:
 
 ```markdown
-<div data-fcm-hide="essentials" markdown="block">
+<div data-audience-hide="essentials" markdown="block">
 This block is hidden in Essentials mode.
 </div>
 
-This sentence has <span data-fcm-hide="essentials">an inline aside</span> in it.
+This sentence has <span data-audience-hide="essentials">an inline aside</span> in it.
 ```
 
 ### 3. CSS for multi-paragraph list items
@@ -190,10 +190,10 @@ The plugin hides only the marked element and, for a heading, its section. It doe
 elements. For a list item with more than one paragraph, such as a card in a Material
 [card grid](https://squidfunk.github.io/mkdocs-material/reference/grids/#using-card-grids),
 `attr_list` can only mark the first paragraph, not the `<li>`. To hide the whole item, add a CSS
-rule that uses the `data-fcm-mode` attribute the plugin sets on `<html>`:
+rule that uses the `data-audience-mode` attribute the plugin sets on `<html>`:
 
 ```css
-html[data-fcm-mode="essentials"] .grid.cards > ul > li:has(> p[data-fcm-hide~="essentials"]) {
+html[data-audience-mode="essentials"] .grid.cards > ul > li:has(> p[data-audience-hide~="essentials"]) {
   display: none;
 }
 ```
@@ -216,8 +216,8 @@ modes one position away, then two, and so on. If two modes are the same distance
 the one later in the list.
 
 For example, with the modes `beginner`, `intermediate`, and `advanced`, a heading marked
-`data-fcm-hide="beginner advanced"` is shown only in Intermediate. Following a link to it from
-Beginner or Advanced switches to Intermediate. A heading marked `data-fcm-hide="beginner"` is
+`data-audience-hide="beginner advanced"` is shown only in Intermediate. Following a link to it from
+Beginner or Advanced switches to Intermediate. A heading marked `data-audience-hide="beginner"` is
 shown in both Intermediate and Advanced, so a Beginner reader following a link to it switches to
 Intermediate, the closer of the two.
 
@@ -253,23 +253,37 @@ affected. To track modes without relying on the URL, use the event described in
 ## Styling
 
 The toggle's CSS is controlled with custom properties. Override them in your `extra_css` file on
-`#fcm-toggle`, or on a parent element such as `:root`:
+`#audience-toggle`, or on a parent element such as `:root`:
 
 ```css
-#fcm-toggle {
-  --fcm-accent: #2e7d32;      /* border and highlight color (default: currentColor) */
-  --fcm-track-bg: #fdf6e3;    /* toggle background (default: transparent) */
-  --fcm-active-fg: #fdf6e3;   /* text color of the active option (default: Canvas) */
-  --fcm-radius: 1rem;         /* corner radius of the toggle and highlight (default: 1rem) */
-  --fcm-height: 1.2rem;       /* toggle height (default: 1.2rem) */
-  --fcm-font-size: 0.6rem;    /* label font size (default: 0.6rem) */
-  --fcm-icon-size: 0.7rem;    /* icon size (default: 0.7rem) */
+#audience-toggle {
+  --audience-accent: #2e7d32;      /* border and highlight color (default: currentColor) */
+  --audience-track-bg: #fdf6e3;    /* toggle background (default: transparent) */
+  --audience-active-fg: #fdf6e3;   /* text color of the active option (default: Canvas) */
+  --audience-radius: 1rem;         /* corner radius of the toggle and highlight (default: 1rem) */
+  --audience-height: 1.2rem;       /* toggle height (default: 1.2rem) */
+  --audience-font-size: 0.6rem;    /* label font size (default: 0.6rem) */
+  --audience-icon-size: 0.7rem;    /* icon size (default: 0.7rem) */
 }
 ```
 
-For other changes, target the classes `.fcm-toggle`, `.fcm-highlight`, `.fcm-option`,
-`.fcm-option--icon`, and `.fcm-label`. The script sets the highlight's `left` and `width` inline to
-match the active option.
+The toast (shown on switching modes) has its own properties, kept separate from
+`--audience-accent`/`--audience-active-fg` so theming the toggle doesn't also recolor the toast:
+
+```css
+#audience-toast {
+  --audience-toast-bg: #2e7d32;   /* toast background (default: CanvasText) */
+  --audience-toast-fg: #fdf6e3;   /* toast text color (default: Canvas) */
+}
+```
+
+Left at their defaults, `CanvasText`/`Canvas` auto-invert the toast against the page's
+`color-scheme` CSS property. If your site switches schemes manually, set `color-scheme: light`/
+`dark` yourself for that to track your toggle instead of the OS preference.
+
+For other changes, target the classes `.audience-toggle`, `.audience-highlight`, `.audience-option`,
+`.audience-option--icon`, `.audience-label`, and `.audience-toast`. The script sets the highlight's `left` and
+`width` inline to match the active option.
 
 ## Accessibility
 
@@ -289,17 +303,17 @@ match the active option.
 
 ## Active mode attribute
 
-The plugin sets `data-fcm-mode` on `<html>` to the name of the active mode. Use it to style other
+The plugin sets `data-audience-mode` on `<html>` to the name of the active mode. Use it to style other
 elements or to read the mode from other scripts.
 
 ## Analytics
 
 The plugin doesn't add the mode to URLs, so page views counted by URL don't include it. To record
-the mode, listen for the `fcm:modechange` event on `document`. `event.detail` contains `mode` and
+the mode, listen for the `audience:modechange` event on `document`. `event.detail` contains `mode` and
 `previousMode`:
 
 ```js
-document.addEventListener("fcm:modechange", (event) => {
+document.addEventListener("audience:modechange", (event) => {
   const { mode, previousMode } = event.detail;
   // Google Analytics (gtag.js)
   gtag("event", "content_mode_change", { mode, previous_mode: previousMode });
@@ -312,12 +326,12 @@ The event fires when the plugin sets the mode on page load (`previousMode` is `n
 the mode changes. Clicking the option that's already active doesn't fire it.
 
 A script that loads after the plugin, such as a tag manager snippet, misses the page-load event.
-Read `document.documentElement.dataset.fcmMode` when the script starts to get the current mode,
+Read `document.documentElement.dataset.audienceMode` when the script starts to get the current mode,
 then listen for the event.
 
 ### Using a MutationObserver
 
-You can also watch the `data-fcm-mode` attribute instead of listening for the event. With
+You can also watch the `data-audience-mode` attribute instead of listening for the event. With
 `navigation.instant`, the plugin sets the attribute again on each page change even when the mode
 hasn't changed, so this example skips repeated values:
 
@@ -326,14 +340,14 @@ const html = document.documentElement;
 let lastMode = null;
 
 function reportMode() {
-  const mode = html.dataset.fcmMode;
+  const mode = html.dataset.audienceMode;
   if (!mode || mode === lastMode) return;
   gtag("event", "content_mode_change", { mode, previous_mode: lastMode });
   lastMode = mode;
 }
 
 reportMode();
-new MutationObserver(reportMode).observe(html, { attributeFilter: ["data-fcm-mode"] });
+new MutationObserver(reportMode).observe(html, { attributeFilter: ["data-audience-mode"] });
 ```
 
 ## Testing

@@ -2,7 +2,7 @@
 
 A second page, to check that the active mode persists via `localStorage` across navigation.
 
-## Expert-only section {: data-fcm-hide="beginner intermediate" }
+## Expert-only section {: data-audience-hide="beginner intermediate" }
 
 Only visible in Expert mode.
 
@@ -12,7 +12,7 @@ Hidden with its parent section, so also only visible in Expert mode.
 
 ## Wrapped content
 
-<div data-fcm-hide="intermediate" markdown="block">
+<div data-audience-hide="intermediate" markdown="block">
 
 ### Heading inside a hidden div
 

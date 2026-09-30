@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var CONFIG_SCRIPT_ID = "fcm-config";
+  var CONFIG_SCRIPT_ID = "audience-config";
 
   function readConfig() {
     var el = document.getElementById(CONFIG_SCRIPT_ID);
@@ -67,12 +67,12 @@
   function applyState(container, mode, config) {
     var previousMode = container.dataset.active || null;
 
-    document.documentElement.setAttribute("data-fcm-mode", mode);
+    document.documentElement.setAttribute("data-audience-mode", mode);
     applyContentVisibility(mode, config);
 
     container.dataset.active = mode;
     var activeOption = null;
-    container.querySelectorAll(".fcm-option").forEach(function (option) {
+    container.querySelectorAll(".audience-option").forEach(function (option) {
       var isActive = option.dataset.name === mode;
       option.setAttribute("aria-pressed", String(isActive));
       if (isActive) activeOption = option;
@@ -81,7 +81,7 @@
 
     if (previousMode !== mode) {
       document.dispatchEvent(
-        new CustomEvent("fcm:modechange", { detail: { mode: mode, previousMode: previousMode } })
+        new CustomEvent("audience:modechange", { detail: { mode: mode, previousMode: previousMode } })
       );
     }
   }
@@ -89,14 +89,14 @@
   // Options size to their labels, so the highlight is measured from the active
   // option rather than set to an equal share of the track.
   function positionHighlight(container, activeOption) {
-    var highlight = container.querySelector(".fcm-highlight");
+    var highlight = container.querySelector(".audience-highlight");
     if (!highlight || !activeOption) return;
     highlight.style.left = activeOption.offsetLeft + "px";
     highlight.style.width = activeOption.offsetWidth + "px";
   }
 
   // Material header only: if the toggle wrapped below the title, give it a row
-  // to itself (see .fcm-toggle--own-row in the CSS). Measured with the class
+  // to itself (see .audience-toggle--own-row in the CSS). Measured with the class
   // off, so the toggle keeps its place whenever it fits.
   function updateHeaderRow(container) {
     var inner = container.parentElement;
@@ -104,16 +104,16 @@
     var title = inner.querySelector(".md-header__title");
     if (!title) return;
 
-    container.classList.remove("fcm-toggle--own-row");
+    container.classList.remove("audience-toggle--own-row");
     var wrapped = container.getBoundingClientRect().top >= title.getBoundingClientRect().bottom - 1;
-    container.classList.toggle("fcm-toggle--own-row", wrapped);
+    container.classList.toggle("audience-toggle--own-row", wrapped);
   }
 
   function refreshLayout() {
-    var container = document.getElementById("fcm-toggle");
+    var container = document.getElementById("audience-toggle");
     if (!container) return;
     updateHeaderRow(container);
-    positionHighlight(container, container.querySelector('.fcm-option[aria-pressed="true"]'));
+    positionHighlight(container, container.querySelector('.audience-option[aria-pressed="true"]'));
   }
 
   var toastTimer = null;
@@ -122,11 +122,11 @@
     var text = mode.announcement || mode.label;
     if (!text) return;
 
-    var toast = document.getElementById("fcm-toast");
+    var toast = document.getElementById("audience-toast");
     if (!toast) {
       toast = document.createElement("div");
-      toast.id = "fcm-toast";
-      toast.className = "fcm-toast";
+      toast.id = "audience-toast";
+      toast.className = "audience-toast";
       toast.setAttribute("role", "status");
       toast.setAttribute("aria-live", "polite");
       document.body.appendChild(toast);
@@ -138,40 +138,40 @@
     toast.style.top = Math.max(headerBottom, 0) + 12 + "px";
 
     // Force a reflow so the transition restarts if the toast is already showing.
-    toast.classList.remove("fcm-toast--visible");
+    toast.classList.remove("audience-toast--visible");
     void toast.offsetWidth;
-    toast.classList.add("fcm-toast--visible");
+    toast.classList.add("audience-toast--visible");
 
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
-      toast.classList.remove("fcm-toast--visible");
+      toast.classList.remove("audience-toast--visible");
     }, 1400);
   }
 
   function buildToggle(config) {
     var container = document.createElement("div");
-    container.id = "fcm-toggle";
-    container.className = "fcm-toggle";
+    container.id = "audience-toggle";
+    container.className = "audience-toggle";
     container.setAttribute("role", "group");
     container.setAttribute("aria-label", config.ariaLabel || "Content mode");
     if (config.collapseLabels) container.setAttribute("data-collapse-labels", "");
 
     var highlight = document.createElement("span");
-    highlight.className = "fcm-highlight";
+    highlight.className = "audience-highlight";
     highlight.setAttribute("aria-hidden", "true");
     container.appendChild(highlight);
 
     config.modes.forEach(function (mode) {
       var option = document.createElement("button");
       option.type = "button";
-      option.className = "fcm-option";
-      if (mode.icon) option.className += " fcm-option--icon";
+      option.className = "audience-option";
+      if (mode.icon) option.className += " audience-option--icon";
       option.dataset.name = mode.name;
       if (mode.description) option.title = mode.description;
-      if (mode.icon) option.style.setProperty("--fcm-icon", mode.icon);
+      if (mode.icon) option.style.setProperty("--audience-icon", mode.icon);
 
       var label = document.createElement("span");
-      label.className = "fcm-label";
+      label.className = "audience-label";
       label.textContent = mode.label;
       option.appendChild(label);
 
@@ -179,7 +179,7 @@
     });
 
     container.addEventListener("click", function (event) {
-      var option = event.target.closest(".fcm-option");
+      var option = event.target.closest(".audience-option");
       if (!option) return;
       var name = option.dataset.name;
       if (container.dataset.active === name) return;
@@ -195,7 +195,7 @@
   }
 
   function getOrCreateToggle(config) {
-    var existing = document.getElementById("fcm-toggle");
+    var existing = document.getElementById("audience-toggle");
     if (existing) return existing;
 
     var anchor = config.insertSelector ? document.querySelector(config.insertSelector) : null;
@@ -308,16 +308,16 @@
 
     // setUp runs on every page change with navigation.instant, so bind
     // window listeners only once.
-    if (!window.__fcmHashRecoveryBound) {
-      window.__fcmHashRecoveryBound = true;
+    if (!window.__audienceHashRecoveryBound) {
+      window.__audienceHashRecoveryBound = true;
       window.addEventListener("hashchange", function () {
-        var current = document.getElementById("fcm-toggle");
+        var current = document.getElementById("audience-toggle");
         if (current) revealHashTargetIfHidden(current, config);
       });
     }
 
-    if (!window.__fcmResizeBound) {
-      window.__fcmResizeBound = true;
+    if (!window.__audienceResizeBound) {
+      window.__audienceResizeBound = true;
       window.addEventListener("resize", refreshLayout);
     }
   }

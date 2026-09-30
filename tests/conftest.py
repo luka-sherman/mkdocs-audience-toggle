@@ -58,7 +58,7 @@ KNOWN_UPSTREAM_RULES = {
 
 # These come from Material's default palette (.md-tabs__link, .md-copyright) and the
 # fixture's plain prose link. They're skipped only for full-page scans, so the scan
-# scoped to #fcm-toggle still checks the toggle's contrast.
+# scoped to #audience-toggle still checks the toggle's contrast.
 FULL_PAGE_ONLY_DISABLED_RULES = {
     "color-contrast",
     "link-in-text-block",

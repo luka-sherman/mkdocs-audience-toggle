@@ -9,15 +9,15 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 JS_FILENAME = "audience_toggle.js"
 CSS_FILENAME = "audience_toggle.css"
 ASSET_PREFIX = "assets/audience_toggle"
-CONFIG_SCRIPT_ID = "fcm-config"
+CONFIG_SCRIPT_ID = "audience-config"
 
 DEFAULTS = {
-    "storage_key": "fcm-mode",
+    "storage_key": "audience-mode",
     "query_param": None,
     "insert_selector": '[data-md-component="palette"]',
     "hide_toc_entries": True,
     "wrapper_class": None,
-    "attribute": "data-fcm-hide",
+    "attribute": "data-audience-hide",
 }
 
 

@@ -17,17 +17,17 @@ def test_page_has_no_axe_violations(page, site_url, mode):
 def test_toggle_has_no_axe_violations_scoped(page, site_url):
     """Runs every rule, including the ones the full-page scan skips."""
     page.goto(site_url)
-    violations = run_axe(page, context="#fcm-toggle")
+    violations = run_axe(page, context="#audience-toggle")
     assert not violations, format_violations(violations)
 
 
 def test_toast_is_a_polite_live_region(page, site_url):
     page.goto(site_url)
-    page.click('.fcm-option[data-name="expert"]')
-    page.wait_for_selector("#fcm-toast")
+    page.click('.audience-option[data-name="expert"]')
+    page.wait_for_selector("#audience-toast")
     role, live = page.evaluate(
         """() => {
-            const toast = document.getElementById('fcm-toast');
+            const toast = document.getElementById('audience-toast');
             return [toast.getAttribute('role'), toast.getAttribute('aria-live')];
         }"""
     )
@@ -37,6 +37,6 @@ def test_toast_is_a_polite_live_region(page, site_url):
 
 def test_toast_announces_the_configured_text(page, site_url):
     page.goto(site_url)
-    page.click('.fcm-option[data-name="expert"]')
-    text = page.evaluate("() => document.getElementById('fcm-toast').textContent")
+    page.click('.audience-option[data-name="expert"]')
+    text = page.evaluate("() => document.getElementById('audience-toast').textContent")
     assert "Now showing everything" in text

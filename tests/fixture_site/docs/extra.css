@@ -1,10 +1,10 @@
-#fcm-toggle {
+#audience-toggle {
   margin: 0.4rem 0.4rem;
-  --fcm-track-bg: rgba(0, 0, 0, 0.18);
-  --fcm-active-fg: #1a1a2e;
+  --audience-track-bg: rgba(0, 0, 0, 0.18);
+  --audience-active-fg: #1a1a2e;
 }
 
 /* The card grid rule from the README's "CSS for multi-paragraph list items". */
-html[data-fcm-mode="beginner"] .grid.cards > ul > li:has(> p[data-fcm-hide~="beginner"]) {
+html[data-audience-mode="beginner"] .grid.cards > ul > li:has(> p[data-audience-hide~="beginner"]) {
   display: none;
 }

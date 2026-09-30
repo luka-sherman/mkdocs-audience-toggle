@@ -1,37 +1,43 @@
 /* mkdocs-audience-toggle
 
-   Custom properties (set on #fcm-toggle or a parent such as :root):
-     --fcm-accent       border and highlight color (default: currentColor)
-     --fcm-track-bg     toggle background (default: transparent)
-     --fcm-active-fg    text color of the active option (default: Canvas)
-     --fcm-radius       corner radius of the toggle and highlight
-     --fcm-height       toggle height
-     --fcm-font-size    label font size
-     --fcm-icon-size    icon size */
+   Custom properties (set on #audience-toggle or a parent such as :root):
+     --audience-accent       border and highlight color (default: currentColor)
+     --audience-track-bg     toggle background (default: transparent)
+     --audience-active-fg    text color of the active option (default: Canvas)
+     --audience-radius       corner radius of the toggle and highlight
+     --audience-height       toggle height
+     --audience-font-size    label font size
+     --audience-icon-size    icon size
+     --audience-toast-bg     toast background (default: CanvasText)
+     --audience-toast-fg     toast text color (default: Canvas)
 
-.fcm-toggle {
+   Toast vars are separate from --audience-accent/--audience-active-fg so theming the
+   toggle doesn't also recolor the toast. Their CanvasText/Canvas defaults
+   auto-invert the toast against the page's `color-scheme` property. */
+
+.audience-toggle {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: var(--fcm-height, 1.2rem);
-  border: 0.05rem solid var(--fcm-accent, currentColor);
-  border-radius: var(--fcm-radius, 1rem);
+  height: var(--audience-height, 1.2rem);
+  border: 0.05rem solid var(--audience-accent, currentColor);
+  border-radius: var(--audience-radius, 1rem);
   overflow: hidden;
-  background-color: var(--fcm-track-bg, transparent);
+  background-color: var(--audience-track-bg, transparent);
 }
 
 /* left and width are set by the script to match the active option. */
-.fcm-highlight {
+.audience-highlight {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  border-radius: var(--fcm-radius, 1rem);
-  background-color: var(--fcm-accent, currentColor);
+  border-radius: var(--audience-radius, 1rem);
+  background-color: var(--audience-accent, currentColor);
   transition: left 0.2s ease, width 0.2s ease;
 }
 
-.fcm-option {
+.audience-option {
   position: relative;
   z-index: 1;
   display: inline-flex;
@@ -43,28 +49,28 @@
   background: none;
   color: inherit;
   font: inherit;
-  font-size: var(--fcm-font-size, 0.6rem);
+  font-size: var(--audience-font-size, 0.6rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
   cursor: pointer;
 }
 
-.fcm-option[aria-pressed="true"] {
-  color: var(--fcm-active-fg, Canvas);
+.audience-option[aria-pressed="true"] {
+  color: var(--audience-active-fg, Canvas);
 }
 
 /* The icon is a mask over currentColor so it matches the label color. */
-.fcm-option--icon::before {
+.audience-option--icon::before {
   content: "";
   display: inline-block;
-  width: var(--fcm-icon-size, 0.7rem);
-  height: var(--fcm-icon-size, 0.7rem);
+  width: var(--audience-icon-size, 0.7rem);
+  height: var(--audience-icon-size, 0.7rem);
   margin-right: 0.3rem;
   flex: none;
   background-color: currentColor;
-  -webkit-mask-image: var(--fcm-icon);
-  mask-image: var(--fcm-icon);
+  -webkit-mask-image: var(--audience-icon);
+  mask-image: var(--audience-icon);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: contain;
@@ -74,11 +80,11 @@
 }
 
 @media (max-width: 45em) {
-  .fcm-toggle[data-collapse-labels] .fcm-option--icon::before {
+  .audience-toggle[data-collapse-labels] .audience-option--icon::before {
     margin-right: 0;
   }
 
-  .fcm-toggle[data-collapse-labels] .fcm-label {
+  .audience-toggle[data-collapse-labels] .audience-label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -89,28 +95,28 @@
 }
 
 /* Material header on narrow screens: if the toggle doesn't fit next to the
-   title, the script adds .fcm-toggle--own-row, which moves it after the other
+   title, the script adds .audience-toggle--own-row, which moves it after the other
    header buttons so it gets a row to itself. */
 @media (max-width: 45em) {
-  .md-header__inner:has(> #fcm-toggle) {
+  .md-header__inner:has(> #audience-toggle) {
     flex-wrap: wrap;
     row-gap: 0.2rem;
   }
 
-  .md-header__inner > #fcm-toggle.fcm-toggle--own-row {
+  .md-header__inner > #audience-toggle.audience-toggle--own-row {
     order: 1;
     margin: 0.1rem auto 0.2rem;
   }
 }
 
-.fcm-toast {
+.audience-toast {
   position: fixed;
   left: 50%;
   z-index: 10;
   padding: 0.5rem 0.9rem;
   border-radius: 0.4rem;
-  background-color: var(--fcm-accent, currentColor);
-  color: var(--fcm-active-fg, Canvas);
+  background-color: var(--audience-toast-bg, CanvasText);
+  color: var(--audience-toast-fg, Canvas);
   font-size: 0.7rem;
   font-weight: 700;
   white-space: nowrap;
@@ -120,14 +126,14 @@
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.fcm-toast--visible {
+.audience-toast--visible {
   opacity: 1;
   transform: translate(-50%, 0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fcm-highlight,
-  .fcm-toast {
+  .audience-highlight,
+  .audience-toast {
     transition: none;
   }
 }

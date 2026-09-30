@@ -2,7 +2,7 @@
 
 
 def current_mode(page):
-    return page.evaluate("() => document.documentElement.getAttribute('data-fcm-mode')")
+    return page.evaluate("() => document.documentElement.getAttribute('data-audience-mode')")
 
 
 def test_default_mode_is_the_one_marked_default(page, site_url):
@@ -61,7 +61,7 @@ def test_card_grid_has_rule_hides_the_whole_card(page, site_url):
     page.goto(f"{site_url}/?mode=beginner")
     result = page.evaluate(
         """() => {
-            const marked = document.querySelector('.grid.cards > ul > li > p[data-fcm-hide~="beginner"]');
+            const marked = document.querySelector('.grid.cards > ul > li > p[data-audience-hide~="beginner"]');
             const card = marked ? marked.closest('li') : null;
             const otherCard = [...document.querySelectorAll('.grid.cards > ul > li')]
                 .find((li) => li.textContent.includes('Card B'));
@@ -127,7 +127,7 @@ def test_link_to_subheading_inside_a_hidden_section(page, site_url):
 
 
 def test_link_to_heading_inside_a_hidden_div(page, site_url):
-    """The heading is inside a <div data-fcm-hide="intermediate">. From Intermediate,
+    """The heading is inside a <div data-audience-hide="intermediate">. From Intermediate,
     Beginner and Expert are equally close, and the later one (Expert) wins."""
     page.goto(f"{site_url}/other/?mode=intermediate#heading-inside-a-hidden-div")
     page.wait_for_function(
@@ -152,8 +152,8 @@ def test_highlight_pill_aligns_with_the_active_option_regardless_of_label_length
     # The script repositions the highlight after web fonts load, so wait for it.
     page.wait_for_function(
         """() => {
-            const o = document.querySelector('.fcm-option[data-name="intermediate"]').getBoundingClientRect();
-            const h = document.querySelector('.fcm-highlight').getBoundingClientRect();
+            const o = document.querySelector('.audience-option[data-name="intermediate"]').getBoundingClientRect();
+            const h = document.querySelector('.audience-highlight').getBoundingClientRect();
             return Math.abs(o.left - h.left) < 1 && Math.abs(o.width - h.width) < 1;
         }"""
     )
@@ -163,7 +163,7 @@ def test_reduced_motion_disables_the_highlight_transition(page, site_url):
     page.emulate_media(reduced_motion="reduce")
     page.goto(site_url)
     transition = page.evaluate(
-        "() => getComputedStyle(document.querySelector('.fcm-highlight')).transitionDuration"
+        "() => getComputedStyle(document.querySelector('.audience-highlight')).transitionDuration"
     )
     assert transition in ("0s", ""), f"expected no transition, got {transition!r}"
 
@@ -176,7 +176,7 @@ def test_toggle_drops_to_its_own_row_on_a_narrow_viewport(page, site_url):
     result = page.evaluate(
         """() => {
             const hamburger = document.querySelector('.md-header__button.md-icon');
-            const toggle = document.getElementById('fcm-toggle');
+            const toggle = document.getElementById('audience-toggle');
             const header = document.querySelector('.md-header__inner');
             const h = hamburger.getBoundingClientRect();
             const t = toggle.getBoundingClientRect();
@@ -199,10 +199,10 @@ def test_toggle_keeps_its_place_on_a_narrow_viewport_when_it_fits(page, site_url
     page.goto(site_url)
     result = page.evaluate(
         """() => {
-            const toggle = document.getElementById('fcm-toggle');
+            const toggle = document.getElementById('audience-toggle');
             const option = document.querySelector('.md-header__option');
             return {
-                ownRow: toggle.classList.contains('fcm-toggle--own-row'),
+                ownRow: toggle.classList.contains('audience-toggle--own-row'),
                 beforeOption: toggle.getBoundingClientRect().right <= option.getBoundingClientRect().left,
             };
         }"""
@@ -218,7 +218,7 @@ def test_toggle_stays_on_the_header_row_on_a_wide_viewport(page, site_url):
     result = page.evaluate(
         """() => {
             const title = document.querySelector('.md-header__title');
-            const toggle = document.getElementById('fcm-toggle');
+            const toggle = document.getElementById('audience-toggle');
             const inner = document.querySelector('.md-header__inner');
             const g = title.getBoundingClientRect();
             const t = toggle.getBoundingClientRect();
@@ -236,7 +236,7 @@ def test_query_param_does_not_change_the_url(page, site_url):
     """Removing the parameter would break Material's instant-navigation links, which
     already include it. See "Setting the mode from a URL" in the README."""
     page.goto(f"{site_url}/?mode=expert&keep=me#advanced-topic")
-    page.wait_for_function("() => document.documentElement.getAttribute('data-fcm-mode') === 'expert'")
+    page.wait_for_function("() => document.documentElement.getAttribute('data-audience-mode') === 'expert'")
 
     result = page.evaluate("""() => ({ search: location.search, hash: location.hash })""")
     assert "mode=expert" in result["search"]
@@ -251,14 +251,14 @@ def test_query_param_with_unrecognized_value_is_ignored(page, site_url):
 
 RECORD_EVENTS = """() => {
     window.__events = [];
-    document.addEventListener('fcm:modechange', (e) => window.__events.push(e.detail));
+    document.addEventListener('audience:modechange', (e) => window.__events.push(e.detail));
 }"""
 
 
 def test_modechange_event_fires_with_the_new_and_previous_mode(page, site_url):
     page.goto(site_url)
     page.evaluate(RECORD_EVENTS)
-    page.click('.fcm-option[data-name="expert"]')
+    page.click('.audience-option[data-name="expert"]')
     events = page.evaluate("() => window.__events")
     assert events == [{"mode": "expert", "previousMode": "intermediate"}]
 
@@ -266,6 +266,6 @@ def test_modechange_event_fires_with_the_new_and_previous_mode(page, site_url):
 def test_modechange_event_does_not_fire_when_clicking_the_active_option(page, site_url):
     page.goto(site_url)
     page.evaluate(RECORD_EVENTS)
-    page.click('.fcm-option[data-name="intermediate"]')
+    page.click('.audience-option[data-name="intermediate"]')
     events = page.evaluate("() => window.__events")
     assert events == []

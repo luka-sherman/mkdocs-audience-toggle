@@ -3,6 +3,13 @@
 All notable changes to this project are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.1] - 2026-09-30
+
+### Changed
+
+- **Breaking:** renamed the `fcm-` prefix (leftover from an earlier plugin name) to `audience-` across every class, id, custom property, data attribute, storage key, and event name.
+- The toast now uses its own `--audience-toast-bg`/`--audience-toast-fg` properties, defaulting to `CanvasText`/`Canvas`, instead of reusing the toggle's `--audience-accent`/`--audience-active-fg`.
+
 ## [0.1.0] - 2026-09-26
 
 ### Added
