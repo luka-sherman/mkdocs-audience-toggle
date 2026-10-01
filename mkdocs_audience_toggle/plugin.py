@@ -1,3 +1,5 @@
+"""MkDocs plugin: an N-way content-mode toggle that shows or hides marked content per mode."""
+
 import json
 import os
 
@@ -22,6 +24,10 @@ DEFAULTS = {
 
 
 class AudienceTogglePlugin(BasePlugin):
+    """Inserts the toggle's assets and per-page config script."""
+
+    _runtime_config = None
+
     config_scheme = (
         ("modes", config_options.Type(list, default=[])),
         ("storage_key", config_options.Type(str, default=DEFAULTS["storage_key"])),
@@ -45,17 +51,15 @@ class AudienceTogglePlugin(BasePlugin):
         normalized = []
         seen_names = set()
         default_name = None
-        for i, raw in enumerate(modes):
+        for raw in modes:
             if not isinstance(raw, dict) or "name" not in raw:
                 raise ValueError(
                     "audience_toggle: each entry under 'modes' must be a "
-                    "mapping with at least a 'name' key (got %r)" % (raw,)
+                    f"mapping with at least a 'name' key (got {raw!r})"
                 )
             name = str(raw["name"])
             if name in seen_names:
-                raise ValueError(
-                    "audience_toggle: duplicate mode name %r in 'modes'" % name
-                )
+                raise ValueError(f"audience_toggle: duplicate mode name {name!r} in 'modes'")
             seen_names.add(name)
             entry = {
                 "name": name,
@@ -109,7 +113,7 @@ class AudienceTogglePlugin(BasePlugin):
             copy_file(src_path, dest_path)
 
     def on_post_page(self, output, page, config):
-        if not getattr(self, "_runtime_config", None) or not self._runtime_config["modes"]:
+        if not self._runtime_config or not self._runtime_config["modes"]:
             return output
         script = (
             f'<script id="{CONFIG_SCRIPT_ID}" type="application/json">'

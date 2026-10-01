@@ -61,7 +61,8 @@ def test_card_grid_has_rule_hides_the_whole_card(page, site_url):
     page.goto(f"{site_url}/?mode=beginner")
     result = page.evaluate(
         """() => {
-            const marked = document.querySelector('.grid.cards > ul > li > p[data-audience-hide~="beginner"]');
+            const selector = '.grid.cards > ul > li > p[data-audience-hide~="beginner"]';
+            const marked = document.querySelector(selector);
             const card = marked ? marked.closest('li') : null;
             const otherCard = [...document.querySelectorAll('.grid.cards > ul > li')]
                 .find((li) => li.textContent.includes('Card B'));
@@ -152,7 +153,8 @@ def test_highlight_pill_aligns_with_the_active_option_regardless_of_label_length
     # The script repositions the highlight after web fonts load, so wait for it.
     page.wait_for_function(
         """() => {
-            const o = document.querySelector('.audience-option[data-name="intermediate"]').getBoundingClientRect();
+            const opt = document.querySelector('.audience-option[data-name="intermediate"]');
+            const o = opt.getBoundingClientRect();
             const h = document.querySelector('.audience-highlight').getBoundingClientRect();
             return Math.abs(o.left - h.left) < 1 && Math.abs(o.width - h.width) < 1;
         }"""
@@ -201,9 +203,11 @@ def test_toggle_keeps_its_place_on_a_narrow_viewport_when_it_fits(page, site_url
         """() => {
             const toggle = document.getElementById('audience-toggle');
             const option = document.querySelector('.md-header__option');
+            const toggleRight = toggle.getBoundingClientRect().right;
+            const optionLeft = option.getBoundingClientRect().left;
             return {
                 ownRow: toggle.classList.contains('audience-toggle--own-row'),
-                beforeOption: toggle.getBoundingClientRect().right <= option.getBoundingClientRect().left,
+                beforeOption: toggleRight <= optionLeft,
             };
         }"""
     )
@@ -236,7 +240,9 @@ def test_query_param_does_not_change_the_url(page, site_url):
     """Removing the parameter would break Material's instant-navigation links, which
     already include it. See "Setting the mode from a URL" in the README."""
     page.goto(f"{site_url}/?mode=expert&keep=me#advanced-topic")
-    page.wait_for_function("() => document.documentElement.getAttribute('data-audience-mode') === 'expert'")
+    page.wait_for_function(
+        "() => document.documentElement.getAttribute('data-audience-mode') === 'expert'"
+    )
 
     result = page.evaluate("""() => ({ search: location.search, hash: location.hash })""")
     assert "mode=expert" in result["search"]
